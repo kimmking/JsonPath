@@ -20,15 +20,20 @@ import java.io.InputStream;
 import java.net.URL;
 
 /**
- * User: kalle
- * Date: 8/30/13
- * Time: 12:03 PM
+ * Parses JSON as specified by the used {@link com.jayway.jsonpath.spi.json.JsonProvider}.
  */
 public interface ParseContext {
 
-    ReadContext parse(String json);
-    ReadContext parse(Object json);
-    ReadContext parse(InputStream  json);
-    ReadContext parse(File json) throws IOException;
-    ReadContext parse(URL json) throws IOException;
+    DocumentContext parse(String json);
+
+    DocumentContext parse(Object json);
+
+    DocumentContext parse(InputStream json);
+
+    DocumentContext parse(InputStream json, String charset);
+
+    DocumentContext parse(File json) throws IOException;
+
+    @Deprecated
+    DocumentContext parse(URL json) throws IOException;
 }

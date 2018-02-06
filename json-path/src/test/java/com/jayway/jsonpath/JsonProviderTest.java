@@ -1,89 +1,44 @@
 package com.jayway.jsonpath;
 
-import com.jayway.jsonpath.internal.Utils;
-import com.jayway.jsonpath.spi.impl.JacksonProvider;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 
-import java.io.Serializable;
+import static com.jayway.jsonpath.JsonPath.using;
+import static org.assertj.core.api.Assertions.assertThat;
 
-import static com.jayway.jsonpath.JsonModel.model;
+@RunWith(Parameterized.class)
+public class JsonProviderTest extends BaseTest {
 
-/**
- * Created by IntelliJ IDEA.
- * User: kallestenflo
- * Date: 11/8/11
- * Time: 10:40 PM
- */
-public class JsonProviderTest {
+    private final Configuration conf;
 
-    public final static String ARRAY = "[{\"value\": 1},{\"value\": 2}, {\"value\": 3},{\"value\": 4}]";
-
-    public final static String DOCUMENT =
-            "{ \"store\": {\n" +
-                    "    \"book\": [ \n" +
-                    "      { \"category\": \"reference\",\n" +
-                    "        \"author\": \"Nigel Rees\",\n" +
-                    "        \"title\": \"Sayings of the Century\",\n" +
-                    "        \"price\": 8.95\n" +
-                    "      },\n" +
-                    "      { \"category\": \"fiction\",\n" +
-                    "        \"author\": \"Evelyn Waugh\",\n" +
-                    "        \"title\": \"Sword of Honour\",\n" +
-                    "        \"price\": 12.99\n" +
-                    "      },\n" +
-                    "      { \"category\": \"fiction\",\n" +
-                    "        \"author\": \"Herman Melville\",\n" +
-                    "        \"title\": \"Moby Dick\",\n" +
-                    "        \"isbn\": \"0-553-21311-3\",\n" +
-                    "        \"price\": 8.99\n" +
-                    "      },\n" +
-                    "      { \"category\": \"fiction\",\n" +
-                    "        \"author\": \"J. R. R. Tolkien\",\n" +
-                    "        \"title\": \"The Lord of the Rings\",\n" +
-                    "        \"isbn\": \"0-395-19395-8\",\n" +
-                    "        \"price\": 22.99\n" +
-                    "      }\n" +
-                    "    ],\n" +
-                    "    \"bicycle\": {\n" +
-                    "      \"color\": \"red\",\n" +
-                    "      \"price\": 19.95,\n" +
-                    "      \"foo:bar\": \"fooBar\",\n" +
-                    "      \"dot.notation\": \"new\"\n" +
-                    "    }\n" +
-                    "  }\n" +
-                    "}";
-
-
-
-    @Test
-    public void clone_test() throws Exception {
-
-        Serializable jsonObject = (Serializable) model(DOCUMENT).getJsonObject();
-
-        Object clone = Utils.clone(jsonObject);
-
-        System.out.println(model(clone).toJson());
-
+    public JsonProviderTest(Configuration conf) {
+        this.conf = conf;
     }
 
-
-    @Test
-    public void parse_document() throws Exception {
-
-        JacksonProvider provider = new JacksonProvider();
-
-        Object o = provider.parse(DOCUMENT);
-
-        System.out.println(o);
-
+    @Parameterized.Parameters
+    public static Iterable<Configuration> configurations() {
+        return Configurations.configurations();
     }
 
     @Test
-    public void parse_array() throws Exception {
-        JacksonProvider provider = new JacksonProvider();
-
-        Object o = provider.parse(ARRAY);
-
-        System.out.println(o);
+    public void strings_are_unwrapped() {
+        assertThat(using(conf).parse(JSON_DOCUMENT).read("$.string-property", String.class)).isEqualTo("string-value");
     }
+
+    @Test
+    public void integers_are_unwrapped() {
+        assertThat(using(conf).parse(JSON_DOCUMENT).read("$.int-max-property", Integer.class)).isEqualTo(Integer.MAX_VALUE);
+    }
+
+    @Test
+    public void ints_are_unwrapped() {
+        assertThat(using(conf).parse(JSON_DOCUMENT).read("$.int-max-property", int.class)).isEqualTo(Integer.MAX_VALUE);
+    }
+
+
+
+
+
+
 }

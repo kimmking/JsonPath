@@ -2,21 +2,24 @@ package com.jayway.jsonassert;
 
 
 import com.jayway.jsonassert.impl.JsonAsserterImpl;
-import com.jayway.jsonassert.impl.matcher.*;
-import com.jayway.jsonpath.spi.JsonProvider;
-import com.jayway.jsonpath.spi.JsonProviderFactory;
+import com.jayway.jsonassert.impl.matcher.CollectionMatcher;
+import com.jayway.jsonassert.impl.matcher.IsCollectionWithSize;
+import com.jayway.jsonassert.impl.matcher.IsEmptyCollection;
+import com.jayway.jsonassert.impl.matcher.IsMapContainingKey;
+import com.jayway.jsonassert.impl.matcher.IsMapContainingValue;
+import com.jayway.jsonpath.JsonPath;
 import org.hamcrest.Matcher;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.text.ParseException;
 import java.util.Collection;
 import java.util.Map;
 
-/**
- * User: kalle stenflo
- * Date: 1/24/11
- * Time: 9:31 PM
- */
 public class JsonAssert {
 
     /**
@@ -27,7 +30,7 @@ public class JsonAssert {
      * @throws ParseException when the given JSON could not be parsed
      */
     public static JsonAsserter with(String json) {
-        return new JsonAsserterImpl(JsonProviderFactory.createProvider().parse(json));
+        return new JsonAsserterImpl(JsonPath.parse(json).json());
     }
 
     /**
@@ -38,7 +41,7 @@ public class JsonAssert {
      * @throws ParseException when the given JSON could not be parsed
      */
     public static JsonAsserter with(Reader reader) throws IOException {
-        return new JsonAsserterImpl(JsonProviderFactory.createProvider().parse(convertReaderToString(reader)));
+        return new JsonAsserterImpl(JsonPath.parse(convertReaderToString(reader)).json());
 
     }
 
